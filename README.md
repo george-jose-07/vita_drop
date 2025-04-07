@@ -1,16 +1,32 @@
-# vita_drop
+# VitaDrop
 
-A new Flutter project.
+**VitaDrop** is a minimal and elegant health tracking app that helps users stay on top of their daily hydration, calorie intake, and calories burned. It empowers users to build healthy habits by manually logging meals, water intake, and workouts throughout the day.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- **Track Water Intake**  
+  Log how much water you drink and monitor your hydration progress.
 
-A few resources to get you started if this is your first Flutter project:
+- **Log Meals and Calories**  
+  Add your meals and track daily calorie consumption.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Track Workouts and Calories Burned**  
+  Log workouts to offset consumed calories and stay balanced.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Daily Progress Indicator**  
+  Visual circular progress bar to view your overall status.
+
+- **Auto-Reset Daily Stats**  
+  All data resets at the start of a new day to encourage consistency.
+
+- **Firestore Integration**  
+  All data is securely stored and synced using Firebase Firestore.
+
+- **Dark & Light Mode Support**  
+  Beautiful, clean UI designed for both light and dark themes.
+
+## Tech Stack
+
+- Flutter
+- Firebase Auth
+- Firebase Firestore
