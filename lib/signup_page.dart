@@ -16,7 +16,7 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  //bool _obscureConfirmPassword = true;
   var _enteredEmail = '';
   var _enteredPassword = '';
   final _form = GlobalKey<FormState>();
@@ -29,11 +29,11 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  void _toggleConfirmPasswordVisibility() {
-    setState(() {
-      _obscureConfirmPassword = !_obscureConfirmPassword;
-    });
-  }
+  // void _toggleConfirmPasswordVisibility() {
+  //   setState(() {
+  //     _obscureConfirmPassword = !_obscureConfirmPassword;
+  //   });
+  // }
 
   void _submit() async {
     final isValid = _form.currentState!.validate();
@@ -119,12 +119,21 @@ class _SignUpPageState extends State<SignUpPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 64),
-                      Icon(
-                        Icons.spa,
-                        size: 120,
-                        color: isDarkMode
-                            ? AppColors.darkTextColor
-                            : AppColors.textColor,
+                      // Icon(
+                      //   Icons.spa,
+                      //   size: 120,
+                      //   color: isDarkMode
+                      //       ? AppColors.darkTextColor
+                      //       : AppColors.textColor,
+                      // ),
+                      Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage('assets/images/icon.png'),
+                              fit: BoxFit.scaleDown),
+                        ),
                       ),
                       const SizedBox(height: 48),
                       TextFormField(
@@ -263,67 +272,67 @@ class _SignUpPageState extends State<SignUpPage> {
                         },
                         keyboardType: TextInputType.text,
                       ),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        obscureText: _obscureConfirmPassword,
-                        style: TextStyle(
-                          color: isDarkMode
-                              ? AppColors.darkTextColor
-                              : AppColors.textColor,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: "Confirm Password",
-                          labelStyle: TextStyle(
-                            color: isDarkMode
-                                ? AppColors.darkTextColor
-                                : AppColors.textColor,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.lock_outline,
-                            color: isDarkMode
-                                ? AppColors.darkTextColor
-                                : AppColors.textColor,
-                          ),
-                          suffixIcon: IconButton(
-                            onPressed: _toggleConfirmPasswordVisibility,
-                            icon: Icon(
-                              _obscureConfirmPassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: isDarkMode
-                                  ? AppColors.darkTextColor
-                                  : AppColors.textColor,
-                            ),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: isDarkMode
-                              ? AppColors.darkCardColor
-                              : AppColors.cardColor,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().length < 6) {
-                            return 'Password must be at least 6 characters long.';
-                          }
-                          // if(value!=_enteredPassword){
-                          //   return 'Password is not same';
-                          // }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _enteredPassword = value!;
-                        },
-                        keyboardType: TextInputType.text,
-                      ),
-                      // // _buildPasswordField(
-                      // //   label: 'Password',
-                      // //   icon: Icons.lock_outline,
-                      // //   obscureText: _obscurePassword,
-                      // //   onToggleVisibility: _togglePasswordVisibility,
-                      // // ),
+                      // const SizedBox(height: 24),
+                      // TextFormField(
+                      //   obscureText: _obscureConfirmPassword,
+                      //   style: TextStyle(
+                      //     color: isDarkMode
+                      //         ? AppColors.darkTextColor
+                      //         : AppColors.textColor,
+                      //   ),
+                      //   decoration: InputDecoration(
+                      //     labelText: "Confirm Password",
+                      //     labelStyle: TextStyle(
+                      //       color: isDarkMode
+                      //           ? AppColors.darkTextColor
+                      //           : AppColors.textColor,
+                      //     ),
+                      //     prefixIcon: Icon(
+                      //       Icons.lock_outline,
+                      //       color: isDarkMode
+                      //           ? AppColors.darkTextColor
+                      //           : AppColors.textColor,
+                      //     ),
+                      //     suffixIcon: IconButton(
+                      //       onPressed: _toggleConfirmPasswordVisibility,
+                      //       icon: Icon(
+                      //         _obscureConfirmPassword
+                      //             ? Icons.visibility
+                      //             : Icons.visibility_off,
+                      //         color: isDarkMode
+                      //             ? AppColors.darkTextColor
+                      //             : AppColors.textColor,
+                      //       ),
+                      //     ),
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(12),
+                      //       borderSide: BorderSide.none,
+                      //     ),
+                      //     filled: true,
+                      //     fillColor: isDarkMode
+                      //         ? AppColors.darkCardColor
+                      //         : AppColors.cardColor,
+                      //   ),
+                      //   validator: (value) {
+                      //     if (value == null || value.trim().length < 6) {
+                      //       return 'Password must be at least 6 characters long.';
+                      //     }
+                      //     // if(value!=_enteredPassword){
+                      //     //   return 'Password is not same';
+                      //     // }
+                      //     return null;
+                      //   },
+                      //   onSaved: (value) {
+                      //     _enteredPassword = value!;
+                      //   },
+                      //   keyboardType: TextInputType.text,
+                      // ),
+                      // _buildPasswordField(
+                      //   label: 'Password',
+                      //   icon: Icons.lock_outline,
+                      //   obscureText: _obscurePassword,
+                      //   onToggleVisibility: _togglePasswordVisibility,
+                      // ),
                       // _buildPasswordField(
                       //   label: 'Confirm Password',
                       //   icon: Icons.lock_outline,

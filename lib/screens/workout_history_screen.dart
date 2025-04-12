@@ -133,15 +133,15 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
             end: Alignment.bottomRight,
             colors: isDarkMode
                 ? [
-              AppColors.darBackgroundColor1,
-              AppColors.darBackgroundColor2,
-              AppColors.darBackgroundColor3
-            ]
+                    AppColors.darBackgroundColor1,
+                    AppColors.darBackgroundColor2,
+                    AppColors.darBackgroundColor3
+                  ]
                 : [
-              AppColors.backgroundColor1,
-              AppColors.backgroundColor2,
-              AppColors.backgroundColor3
-            ],
+                    AppColors.backgroundColor1,
+                    AppColors.backgroundColor2,
+                    AppColors.backgroundColor3
+                  ],
           ),
         ),
         child: SafeArea(
@@ -152,7 +152,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    height: 200,
+                    height: 250,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: isDarkMode
@@ -181,7 +181,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                               return BarTooltipItem(
                                 '${rod.toY.toInt()} kcal',
                                 TextStyle(
-                                  color: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
+                                  color: isDarkMode
+                                      ? AppColors.darkTextColor
+                                      : AppColors.textColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               );
@@ -199,7 +201,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
-                              reservedSize: 30,
+                              reservedSize: 50,
                               getTitlesWidget: (value, meta) {
                                 if (value.toInt() >= workoutHistory.length)
                                   return const Text('');
@@ -207,12 +209,17 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                                     workoutHistory[value.toInt()]['date'];
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(
-                                    DateFormat('MMM d')
-                                        .format(DateTime.parse(date)),
-                                    style: TextStyle(
-                                      color: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
-                                      fontSize: 12,
+                                  child: RotatedBox(
+                                    quarterTurns: 3,
+                                    child: Text(
+                                      DateFormat('MMM-d')
+                                          .format(DateTime.parse(date)),
+                                      style: TextStyle(
+                                        color: isDarkMode
+                                            ? AppColors.darkTextColor
+                                            : AppColors.textColor,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 );
@@ -222,12 +229,14 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                           leftTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
-                              reservedSize: 40,
+                              reservedSize: 30,
                               getTitlesWidget: (value, meta) {
                                 return Text(
                                   '${value.toInt()}',
                                   style: TextStyle(
-                                    color: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
+                                    color: isDarkMode
+                                        ? AppColors.darkTextColor
+                                        : AppColors.textColor,
                                     fontSize: 12,
                                   ),
                                 );
@@ -262,7 +271,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
+                      color: isDarkMode
+                          ? AppColors.darkTextColor
+                          : AppColors.textColor,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -305,7 +316,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                                 Text(
                                   'Total Today',
                                   style: TextStyle(
-                                    color: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
+                                    color: isDarkMode
+                                        ? AppColors.darkTextColor
+                                        : AppColors.textColor,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -315,7 +328,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
+                                    color: isDarkMode
+                                        ? AppColors.darkTextColor
+                                        : AppColors.textColor,
                                   ),
                                 ),
                               ],
@@ -334,7 +349,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                                     Text(
                                       workout['time'],
                                       style: TextStyle(
-                                        color: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
+                                        color: isDarkMode
+                                            ? AppColors.darkTextColor
+                                            : AppColors.textColor,
                                         fontSize: 14,
                                       ),
                                     ),
@@ -344,7 +361,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
-                                        color: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
+                                        color: isDarkMode
+                                            ? AppColors.darkTextColor
+                                            : AppColors.textColor,
                                       ),
                                     ),
                                   ],
@@ -354,7 +373,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                                   child: Text(
                                     '${workout['calories']} kcal • ${workout['duration']} min • ${workout['type']}',
                                     style: TextStyle(
-                                      color: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
+                                      color: isDarkMode
+                                          ? AppColors.darkTextColor
+                                          : AppColors.textColor,
                                       fontSize: 12,
                                     ),
                                   ),

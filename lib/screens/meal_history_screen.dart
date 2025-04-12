@@ -170,7 +170,7 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    height: 200,
+                    height: 250,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: isDarkMode
@@ -219,7 +219,7 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
-                              reservedSize: 30,
+                              reservedSize: 50,
                               getTitlesWidget: (value, meta) {
                                 if (value.toInt() >= mealHistory.length)
                                   return const Text('');
@@ -227,14 +227,17 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
                             
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(
-                                    DateFormat('MMM d')
-                                        .format(DateTime.parse(date)),
-                                    style: TextStyle(
-                                      color: isDarkMode
-                                          ? AppColors.darkTextColor
-                                          : AppColors.textColor,
-                                      fontSize: 12,
+                                  child: RotatedBox(
+                                    quarterTurns: 3,
+                                    child: Text(
+                                      DateFormat('MMM-d')
+                                          .format(DateTime.parse(date)),
+                                      style: TextStyle(
+                                        color: isDarkMode
+                                            ? AppColors.darkTextColor
+                                            : AppColors.textColor,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 );
@@ -244,7 +247,7 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
                           leftTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
-                              reservedSize: 40,
+                              reservedSize: 30,
                               getTitlesWidget: (value, meta) {
                                 
                                 return Text(

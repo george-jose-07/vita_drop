@@ -20,10 +20,25 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String uid = FirebaseAuth.instance.currentUser!.uid;
   final String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+  // Animation controllers
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  // Staggered animations for sections
+  late Animation<double> _welcomeAnimation;
+  late Animation<double> _healthMetricsAnimation;
+  late Animation<double> _dailyProgressAnimation;
+  late Animation<double> _quickActionsAnimation;
+  late Animation<double> _workoutAnimation;
+
+  // Refresh animation
+  bool _isRefreshing = false;
 
   // Theme colors
   final Color backgroundColor1 = Color(0xFFF0F4F8);
@@ -55,7 +70,75 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Initialize animation controller
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+
+    // Main fade animation
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    ));
+
+    // Main slide animation
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    ));
+
+    // Staggered section animations
+    _welcomeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.0, 0.3, curve: Curves.easeOut),
+    ));
+
+    _healthMetricsAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.2, 0.5, curve: Curves.easeOut),
+    ));
+
+    _dailyProgressAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.3, 0.6, curve: Curves.easeOut),
+    ));
+
+    _quickActionsAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.5, 0.8, curve: Curves.easeOut),
+    ));
+
+    _workoutAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.7, 1.0, curve: Curves.easeOut),
+    ));
+
     _loadInitialData();
+    // Start animation after loading initial data
+    _animationController.forward();
   }
 
   Future<void> _loadInitialData() async {
@@ -191,174 +274,27 @@ class _HomeScreenState extends State<HomeScreen> {
     return 'Obese';
   }
 
-  // Future<void> _addMeal({
-  //   required String name,
-  //   required int calories,
-  //   required String type,
-  // }) async {
-  //   try {
-  //     final docRef = _firestore
-  //         .collection('users')
-  //         .doc(uid)
-  //         .collection('meals')
-  //         .doc(today);
-  //
-  //     // Add the meal entry
-  //     await docRef.collection('entries').add({
-  //       'name': name,
-  //       'kcal': calories,
-  //       'type': type,
-  //       'timestamp': FieldValue.serverTimestamp(),
-  //     });
-  //
-  //     // Get current total
-  //     final doc = await docRef.get();
-  //     final currentTotal = doc.exists ? (doc.data()?['totalKcal'] ?? 0) : 0;
-  //     final newTotal = currentTotal + calories;
-  //
-  //     // Update the total
-  //     await docRef.set({
-  //       'totalKcal': newTotal,
-  //     }, SetOptions(merge: true));
-  //
-  //     // Update the state immediately after Firestore operation
-  //     setState(() {
-  //       totalCalories = newTotal; // Update state with new total
-  //     });
-  //
-  //     // Show success message
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Added $name: $calories kcal'),
-  //         backgroundColor: Colors.green,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     print('Error adding meal: $e');
-  //     // if (mounted) {
-  //     //   ScaffoldMessenger.of(context).showSnackBar(
-  //     //     SnackBar(content: Text('Error adding meal: ${e.toString()}')),
-  //     //   );
-  //     // }
-  //   }
-  // }
-  //
-  // Future<void> _addWorkout({
-  //   required String name,
-  //   required int caloriesBurned,
-  //   required int duration,
-  //   required String type,
-  //   String? notes,
-  // }) async {
-  //   try {
-  //     final docRef = _firestore
-  //         .collection('users')
-  //         .doc(uid)
-  //         .collection('workouts')
-  //         .doc(today);
-  //
-  //     // Add the workout entry
-  //     await docRef.collection('entries').add({
-  //       'name': name,
-  //       'calories_burned': caloriesBurned,
-  //       'duration': duration,
-  //       'type': type,
-  //       'notes': notes,
-  //       'timestamp': FieldValue.serverTimestamp(),
-  //     });
-  //
-  //     // Get current total
-  //     final doc = await docRef.get();
-  //     final currentTotal =
-  //         doc.exists ? (doc.data()?['total_calories_burned'] ?? 0) : 0;
-  //     final newTotal = currentTotal + caloriesBurned;
-  //
-  //     // Update the total in both entries and daily total
-  //     await docRef.set({
-  //       'total_calories_burned': newTotal,
-  //       'date': today,
-  //       'last_updated': FieldValue.serverTimestamp(),
-  //     }, SetOptions(merge: true));
-  //
-  //     // Update the state immediately after Firestore operation
-  //     setState(() {
-  //       totalCaloriesBurned = newTotal; // Update state with new total
-  //     });
-  //
-  //     // Show success message
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Added $name: $caloriesBurned kcal burned'),
-  //         backgroundColor: Colors.green,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     print('Error adding workout: $e');
-  //     // if (mounted) {
-  //     //   ScaffoldMessenger.of(context).showSnackBar(
-  //     //     SnackBar(content: Text('Error adding workout: ${e.toString()}')),
-  //     //   );
-  //     // }
-  //   }
-  // }
-  //
-  // Future<void> _addWater(double amount) async {
-  //   try {
-  //     final docRef = _firestore
-  //         .collection('users')
-  //         .doc(uid)
-  //         .collection('water')
-  //         .doc(today);
-  //
-  //     // Convert liters to milliliters (1L = 1000ml)
-  //     final amountInMl = (amount * 1000).toDouble();
-  //
-  //     // Add the water entry in milliliters
-  //     await docRef.collection('entries').add({
-  //       'amount': amountInMl,
-  //       'timestamp': FieldValue.serverTimestamp(),
-  //     });
-  //
-  //     // Get current total in milliliters
-  //     final doc = await docRef.get();
-  //     final currentTotal = doc.exists ? (doc.data()?['total'] ?? 0.0) : 0.0;
-  //     final newTotal = currentTotal + amountInMl;
-  //
-  //     // Update the total in milliliters
-  //     await docRef.set({
-  //       'total': newTotal,
-  //       'date': today,
-  //       'last_updated': FieldValue.serverTimestamp(),
-  //     }, SetOptions(merge: true));
-  //
-  //     // Update the state immediately after Firestore operation
-  //     setState(() {
-  //       totalWater = newTotal; // Update state with new total
-  //       waterIntake = newTotal / 1000.0; // Convert to liters for display
-  //     });
-  //
-  //     // Show success message in liters
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Added ${amount}L of water'),
-  //         backgroundColor: Colors.blue,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     print('Error adding water: $e');
-  //     // if (mounted) {
-  //     //   ScaffoldMessenger.of(context).showSnackBar(
-  //     //     SnackBar(content: Text('Error adding water: ${e.toString()}')),
-  //     //   );
-  //     // }
-  //   }
-  // }
-
   Future<void> _refreshData() async {
+    // Start refresh animation
+    // setState(() {
+    //   _isRefreshing = true;
+    // });
+    //
+    // // Reset and replay animations
+    // _animationController.reset();
+
     await _fetchUserData();
     await _fetchDailyData();
     await _fetchSettings();
     await _buildDailyProgress();
+
+    // Forward animation after refresh
+    // _animationController.forward();
+    //
+    // // End refresh animation
+    // setState(() {
+    //   _isRefreshing = false;
+    // });
   }
 
   @override
@@ -382,11 +318,17 @@ class _HomeScreenState extends State<HomeScreen> {
             ? AppColors.darBackgroundColor1
             : AppColors.backgroundColor1,
         actions: [
-          IconButton(
-            icon: Icon(Icons.psychology_alt, size: 28),
-            onPressed: () {
-              print('Chatbot clicked');
-            },
+          AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return Transform.rotate(
+                  angle: _isRefreshing ? _animationController.value * 6.28 : 0,
+                  child: IconButton(
+                      icon: Icon(Icons.refresh, size: 28),
+                      onPressed: _isRefreshing ? null : _refreshData
+                  ),
+                );
+              }
           ),
           IconButton(
             icon: Icon(
@@ -401,7 +343,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     onSettingsUpdated: _refreshData,
                   ),
                 ),
-              );
+              ).then((_) {
+                // Replay animations when returning from settings
+                _animationController.reset();
+                _animationController.forward();
+              });
             },
           ),
           const SizedBox(width: 10),
@@ -421,85 +367,173 @@ class _HomeScreenState extends State<HomeScreen> {
             end: Alignment.bottomRight,
             colors: isDarkMode
                 ? [
-                    AppColors.darBackgroundColor1,
-                    AppColors.darBackgroundColor2,
-                    AppColors.darBackgroundColor3
-                  ]
+              AppColors.darBackgroundColor1,
+              AppColors.darBackgroundColor2,
+              AppColors.darBackgroundColor3
+            ]
                 : [AppColors.backgroundColor1,
               AppColors.backgroundColor2,
               AppColors.backgroundColor3],
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildWelcomeSection(isDarkMode
-                    ? AppColors.darkAccentColor
-                    : AppColors.accentColor,isDarkMode
-                    ? AppColors.darkTextColor
-                    : AppColors.textColor),
-                HealthMetricsScreen(
-                  bmi: bmi,
-                  bmiType: bmiType,
-                  waterIntake: waterIntake,
-                  textColor: isDarkMode
-                      ? AppColors.darkTextColor
-                      : AppColors.textColor,
-                  accentColor: isDarkMode
-                      ? AppColors.darkAccentColor
-                      : AppColors.accentColor,
-                  cardColor: isDarkMode
-                      ? AppColors.darkCardColor
-                      : AppColors.cardColor,
-                ),
-                _buildDailyProgress(),
-                QuickActionsScreen(
-                  textColor: isDarkMode ? darkTextColor : textColor,
-                  accentColor: isDarkMode
-                      ? AppColors.darkAccentColor
-                      : AppColors.accentColor,
-                  cardColor: isDarkMode
-                      ? AppColors.darkCardColor
-                      : AppColors.cardColor,
-                  onAddMeal: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddEntryScreen(
-                          entryType: 'meal',
-                          onValueUpdated: _refreshData,
+          child: AnimatedBuilder(
+            animation: _fadeAnimation,
+            builder: (context, child) {
+              return FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        FadeTransition(
+                          opacity: _welcomeAnimation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(-0.2, 0),
+                              end: Offset.zero,
+                            ).animate(_welcomeAnimation),
+                            child: _buildWelcomeSection(
+                              isDarkMode ? AppColors.darkAccentColor : AppColors.accentColor,
+                              isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
+                            ),
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  onAddWater: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddEntryScreen(
-                          entryType: 'water',
-                          onValueUpdated: _refreshData,
+                        FadeTransition(
+                          opacity: _healthMetricsAnimation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0.2, 0),
+                              end: Offset.zero,
+                            ).animate(_healthMetricsAnimation),
+                            child: HealthMetricsScreen(
+                              bmi: bmi,
+                              bmiType: bmiType,
+                              waterIntake: waterIntake,
+                              textColor: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
+                              accentColor: isDarkMode ? AppColors.darkAccentColor : AppColors.accentColor,
+                              cardColor: isDarkMode ? AppColors.darkCardColor : AppColors.cardColor,
+                            ),
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  onAddWorkout: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            AddWorkoutScreen(onSettingsUpdated: _refreshData),
-                      ),
-                    );
-                  },
+                        FadeTransition(
+                          opacity: _dailyProgressAnimation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(-0.2, 0),
+                              end: Offset.zero,
+                            ).animate(_dailyProgressAnimation),
+                            child: _buildDailyProgress(),
+                          ),
+                        ),
+                        FadeTransition(
+                          opacity: _quickActionsAnimation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0.2, 0),
+                              end: Offset.zero,
+                            ).animate(_quickActionsAnimation),
+                            child: QuickActionsScreen(
+                              textColor: isDarkMode ? darkTextColor : textColor,
+                              accentColor: isDarkMode ? AppColors.darkAccentColor : AppColors.accentColor,
+                              cardColor: isDarkMode ? AppColors.darkCardColor : AppColors.cardColor,
+                              onAddMeal: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation, secondaryAnimation) => AddEntryScreen(
+                                      entryType: 'meal',
+                                      onValueUpdated: _refreshData,
+                                    ),
+                                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                      var begin = const Offset(1.0, 0.0);
+                                      var end = Offset.zero;
+                                      var curve = Curves.easeInOut;
+                                      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                ).then((_) {
+                                  // Replay animations when returning
+                                  _animationController.reset();
+                                  _animationController.forward();
+                                });
+                              },
+                              onAddWater: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation, secondaryAnimation) => AddEntryScreen(
+                                      entryType: 'water',
+                                      onValueUpdated: _refreshData,
+                                    ),
+                                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                      var begin = const Offset(1.0, 0.0);
+                                      var end = Offset.zero;
+                                      var curve = Curves.easeInOut;
+                                      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                ).then((_) {
+                                  // Replay animations when returning
+                                  _animationController.reset();
+                                  _animationController.forward();
+                                });
+                              },
+                              onAddWorkout: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation, secondaryAnimation) => AddWorkoutScreen(
+                                      onSettingsUpdated: _refreshData,
+                                    ),
+                                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                      var begin = const Offset(1.0, 0.0);
+                                      var end = Offset.zero;
+                                      var curve = Curves.easeInOut;
+                                      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                ).then((_) {
+                                  // Replay animations when returning
+                                  _animationController.reset();
+                                  _animationController.forward();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        FadeTransition(
+                          opacity: _workoutAnimation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0, 0.2),
+                              end: Offset.zero,
+                            ).animate(_workoutAnimation),
+                            child: WorkoutScreen(
+                              workoutEntries: workoutEntries,
+                              onSettingsUpdated: _refreshData,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                WorkoutScreen(
-                  workoutEntries: workoutEntries,
-                  onSettingsUpdated: _refreshData,
-                ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -521,13 +555,21 @@ class _HomeScreenState extends State<HomeScreen> {
               color: accentColor,
             ),
           ),
-          Text(
-            username,
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
+          AnimatedBuilder(
+              animation: _welcomeAnimation,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: 0.9 + (_welcomeAnimation.value * 0.1),
+                  child: Text(
+                    username,
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                );
+              }
           ),
         ],
       ),
@@ -545,9 +587,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // @override
-  // void dispose() {
-  //   // Cancel any ongoing operations or listeners here if necessary
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    // Dispose animation controllers
+    _animationController.dispose();
+    super.dispose();
+  }
 }

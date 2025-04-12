@@ -151,7 +151,7 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    height: 200,
+                    height: 250,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: isDarkMode
@@ -200,21 +200,24 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
-                              reservedSize: 30,
+                              reservedSize: 50,
                               getTitlesWidget: (value, meta) {
                                 if (value.toInt() >= waterHistory.length)
                                   return const Text('');
                                 final date = waterHistory[value.toInt()]['date'];
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(
-                                    DateFormat('MMM d')
-                                        .format(DateTime.parse(date)),
-                                    style: TextStyle(
-                                      color: isDarkMode
-                                          ? AppColors.darkTextColor
-                                          : AppColors.textColor,
-                                      fontSize: 12,
+                                  child: RotatedBox(
+                                    quarterTurns: 3,
+                                    child: Text(
+                                      DateFormat('MMM-d')
+                                          .format(DateTime.parse(date)),
+                                      style: TextStyle(
+                                        color: isDarkMode
+                                            ? AppColors.darkTextColor
+                                            : AppColors.textColor,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 );
@@ -224,7 +227,7 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
                           leftTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
-                              reservedSize: 40,
+                              reservedSize: 30,
                               getTitlesWidget: (value, meta) {
                                 return Text(
                                   '${value.toInt()}L',

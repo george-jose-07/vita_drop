@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'core/constants/colors.dart';
 // Correct import
 
 class SplashScreen extends StatefulWidget {
@@ -48,15 +50,24 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF4F9B4F),
-              Color(0xFF8D6E63),
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDarkMode
+                ? [
+              AppColors.darBackgroundColor1,
+              AppColors.darBackgroundColor2,
+              AppColors.darBackgroundColor3
+            ]
+                : [
+              AppColors.backgroundColor1,
+              AppColors.backgroundColor2,
+              AppColors.backgroundColor3
             ],
           ),
         ),
@@ -71,17 +82,22 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.self_improvement,
-                        size: 100,
-                        color: Colors.white,
+                      Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                            image: AssetImage('assets/images/icon.png'),
+                            fit: BoxFit.scaleDown,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 30),
                       RichText(
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'live',
+                              text: 'Vita',
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineLarge
@@ -91,10 +107,10 @@ class _SplashScreenState extends State<SplashScreen>
                                   ),
                             ),
                             TextSpan(
-                              text: 'WELL',
+                              text: 'Drop',
                               style: Theme.of(context)
                                   .textTheme
-                                  .headlineMedium
+                                  .headlineLarge
                                   ?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,

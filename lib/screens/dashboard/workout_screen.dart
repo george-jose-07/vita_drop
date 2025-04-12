@@ -166,7 +166,7 @@ class WorkoutScreen extends StatelessWidget {
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: 12),
                               Icon(
                                 Icons.timer_outlined,
                                 size: 16,
@@ -198,7 +198,7 @@ class WorkoutScreen extends StatelessWidget {
                       ),
                       trailing: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
+                          horizontal: 8,
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
