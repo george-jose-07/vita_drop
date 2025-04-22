@@ -29,12 +29,12 @@ class _QuizScreenState extends State<QuizScreen> {
     {
       'question': 'What is your height?',
       'type': 'measurement',
-      'units': ['cm', 'ft/in'],
+      'units': ['cm'],
     },
     {
       'question': 'What is your weight?',
       'type': 'measurement',
-      'units': ['kg', 'lbs'],
+      'units': ['kg'],
     },
     {
       'question': 'How active are you?',
@@ -436,13 +436,13 @@ class _QuizScreenState extends State<QuizScreen> {
     final bmi = weight / ((height / 100) * (height / 100));
     try {
       FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'bmi': bmi.toStringAsFixed(2).toString(),
+        'bmi': bmi.toStringAsFixed(2),
         'age': _answers[questions[0]['question']],
         'gender': _answers[questions[1]['question']],
-        'height':
-        "${_answers[questions[2]['question']]} ${_answers[questions[2]['question'] + '_unit']}",
-        'weight':
-        "${_answers[questions[3]['question']]} ${_answers[questions[3]['question'] + '_unit']}",
+        'height': height,
+        //"${_answers[questions[2]['question']]} ${_answers[questions[2]['question'] + '_unit']}",
+        'weight': weight,
+        //"${_answers[questions[3]['question']]} ${_answers[questions[3]['question'] + '_unit']}",
         'activity': _answers[questions[4]['question']],
         'goal': _answers[questions[5]['question']],
         'sleep': _answers[questions[6]['question']],
