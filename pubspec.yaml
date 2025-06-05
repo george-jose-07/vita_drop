@@ -45,6 +45,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   google_fonts: ^4.0.4
   google_sign_in: ^6.3.0
+  iconsax: ^0.0.8
 
 dev_dependencies:
   flutter_test:
@@ -78,7 +79,6 @@ flutter:
     - assets/images/icon.png
     - assets/images/background.png
     - assets/images/google.png
-
 
 
 

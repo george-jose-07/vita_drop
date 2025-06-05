@@ -102,6 +102,114 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
     });
   }
 
+  // Add this function to the _WorkoutHistoryScreenState class
+  Future<void> _deleteWorkoutEntry(
+      Map<String, dynamic> workout, String time, bool isDark) async {
+    final now = DateTime.now();
+    final today = DateFormat('yyyy-MM-dd').format(now);
+
+    // Show confirmation dialog
+    bool confirmDelete = await showDialog(
+          context: context,
+          builder: (context) => Container(
+            child: AlertDialog(
+              backgroundColor: isDark?AppColors.darBackgroundColor1:AppColors.backgroundColor1,
+              title: Text(
+                'Delete Workout',
+                style: TextStyle(
+                    color:
+                        isDark ? AppColors.darkTextColor : AppColors.textColor),
+              ),
+              content: Text(
+                'Are you sure you want to delete "${workout['name']}"?',
+                style: TextStyle(
+                    color:
+                        isDark ? AppColors.darkTextColor : AppColors.textColor),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text('Cancel',
+                    style: TextStyle(
+                        color:
+                        isDark ? AppColors.darkTextColor : AppColors.textColor),),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child:
+                      const Text('Delete', style: TextStyle(color: Colors.red)),
+                ),
+              ],
+            ),
+          ),
+        ) ??
+        false;
+
+    if (!confirmDelete) return;
+
+    try {
+      // Query to find the document with matching time and name
+      final entriesSnapshot = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('workouts')
+          .doc(today)
+          .collection('entries')
+          .where('name', isEqualTo: workout['name'])
+          .get();
+
+      // Find the specific entry that matches our time
+      QueryDocumentSnapshot<Map<String, dynamic>>? entryToDelete;
+
+      for (var doc in entriesSnapshot.docs) {
+        final timestamp = doc.data()['timestamp'].toDate();
+        final docTime = DateFormat('HH:mm').format(timestamp);
+        if (docTime == time) {
+          entryToDelete = doc;
+          break;
+        }
+      }
+
+      if (entryToDelete != null) {
+        // Delete the entry
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('workouts')
+            .doc(today)
+            .collection('entries')
+            .doc(entryToDelete.id)
+            .delete();
+
+        // Update the total calories for today
+        final newTotal = todayTotal - workout['calories'];
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('workouts')
+            .doc(today)
+            .update({'total_calories_burned': newTotal});
+
+        // Refresh the data
+        _fetchWorkoutHistory();
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Workout deleted successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not find the workout to delete')),
+        );
+      }
+    } catch (e) {
+      print('Error deleting workout: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error deleting workout')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode =
@@ -305,7 +413,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Icon(
-                                Icons.fitness_center,
+                                Icons.fitness_center_outlined,
                                 color: Color(0xFF4CAF50),
                               ),
                             ),
@@ -340,47 +448,51 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                         const SizedBox(height: 16),
                         ...todayWorkouts.map<Widget>((workout) {
                           return Padding(
-                            padding: const EdgeInsets.only(left: 40, bottom: 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      workout['time'],
+                            padding: const EdgeInsets.only(left: 20, bottom: 8),
+                            child: GestureDetector(
+                              onLongPress: () => _deleteWorkoutEntry(
+                                  workout, workout['time'], isDarkMode),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        workout['time'],
+                                        style: TextStyle(
+                                          color: isDarkMode
+                                              ? AppColors.darkTextColor
+                                              : AppColors.textColor,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Text(
+                                        workout['name'],
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: isDarkMode
+                                              ? AppColors.darkTextColor
+                                              : AppColors.textColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 60),
+                                    child: Text(
+                                      '${workout['calories']} kcal • ${workout['duration']} min • ${workout['type']}',
                                       style: TextStyle(
                                         color: isDarkMode
                                             ? AppColors.darkTextColor
                                             : AppColors.textColor,
-                                        fontSize: 14,
+                                        fontSize: 12,
                                       ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Text(
-                                      workout['name'],
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: isDarkMode
-                                            ? AppColors.darkTextColor
-                                            : AppColors.textColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 60),
-                                  child: Text(
-                                    '${workout['calories']} kcal • ${workout['duration']} min • ${workout['type']}',
-                                    style: TextStyle(
-                                      color: isDarkMode
-                                          ? AppColors.darkTextColor
-                                          : AppColors.textColor,
-                                      fontSize: 12,
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         }).toList(),

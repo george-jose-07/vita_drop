@@ -67,7 +67,7 @@ class _DailyProgressScreenState extends State<DailyProgressScreen> {
                     current: widget.totalCalories,
                     goal: widget.dailyCalorieLimit,
                     unit: 'kcal',
-                    icon: Icons.local_fire_department,
+                    icon: Icons.local_fire_department_outlined,
                     color: Colors.orange,
                     textColor: isDarkMode?AppColors.darkTextColor:AppColors.textColor,
                     onTap: () {
@@ -85,7 +85,7 @@ class _DailyProgressScreenState extends State<DailyProgressScreen> {
                     current: widget.totalWater,
                     goal: widget.dailyWaterLimit,
                     unit: 'ml',
-                    icon: Icons.water_drop,
+                    icon: Icons.water_drop_outlined,
                     color: Color(0xFF5cb5e1),
                     textColor: isDarkMode?AppColors.darkTextColor:AppColors.textColor,
                     onTap: () {
@@ -103,7 +103,7 @@ class _DailyProgressScreenState extends State<DailyProgressScreen> {
                     current: widget.totalCaloriesBurned,
                     goal: widget.dailyCalorieBurnGoal,
                     unit: 'kcal',
-                    icon: Icons.fitness_center,
+                    icon: Icons.fitness_center_outlined,
                     color: widget.totalCaloriesBurned >=
                             widget.dailyCalorieBurnGoal
                         ? Colors.green

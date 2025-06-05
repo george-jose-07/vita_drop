@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:vita_drop/core/constants/colors.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -160,7 +161,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 _buildSettingCard(
                   title: 'Daily Calorie Limit',
-                  icon: Icons.local_fire_department,
+                  icon: Icons.local_fire_department_outlined,
                   accentColor: isDarkMode
                       ? AppColors.darkAccentColor
                       : AppColors.accentColor,
@@ -210,7 +211,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   accentColor: isDarkMode
                       ? AppColors.darkAccentColor
                       : AppColors.accentColor,
-                  icon: Icons.water_drop,
+                  icon: Icons.water_drop_outlined,
                   cardColor: isDarkMode
                       ? AppColors.darkCardColor
                       : AppColors.cardColor,
@@ -345,7 +346,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 16),
                 _buildSettingCard(
                   title: 'Weight',
-                  icon: Icons.monitor_weight,
+                  icon: Iconsax.weight,
                   cardColor: isDarkMode
                       ? AppColors.darkCardColor
                       : AppColors.cardColor,

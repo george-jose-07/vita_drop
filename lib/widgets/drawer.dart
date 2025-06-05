@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:vita_drop/core/constants/colors.dart';
 import 'package:vita_drop/screens/settings_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -217,7 +218,7 @@ class _MainDrawerState extends State<MainDrawer> with SingleTickerProviderStateM
                     _buildAnimatedProfileInfo(
                         'Weight',
                         '${userData!['weight'] ?? 'N/A'} kg',
-                        Icons.monitor_weight,
+                        Iconsax.weight,
                         isDarkMode
                             ? AppColors.darkCardColor
                             : AppColors.cardColor,
@@ -229,7 +230,7 @@ class _MainDrawerState extends State<MainDrawer> with SingleTickerProviderStateM
                     _buildAnimatedProfileInfo(
                         'BMI',
                         bmi ?? 'N/A',
-                        Icons.calculate,
+                        Iconsax.calculator,
                         isDarkMode
                             ? AppColors.darkCardColor
                             : AppColors.cardColor,
@@ -241,7 +242,7 @@ class _MainDrawerState extends State<MainDrawer> with SingleTickerProviderStateM
                     _buildAnimatedProfileInfo(
                         'Gender',
                         userData!['gender'] ?? 'N/A',
-                        Icons.person,
+                        Iconsax.user,
                         isDarkMode
                             ? AppColors.darkCardColor
                             : AppColors.cardColor,
@@ -253,7 +254,7 @@ class _MainDrawerState extends State<MainDrawer> with SingleTickerProviderStateM
                     _buildAnimatedProfileInfo(
                         'Age',
                         '${userData!['age'] ?? 'N/A'} years',
-                        Icons.cake,
+                        Iconsax.cake,
                         isDarkMode
                             ? AppColors.darkCardColor
                             : AppColors.cardColor,
@@ -265,7 +266,7 @@ class _MainDrawerState extends State<MainDrawer> with SingleTickerProviderStateM
                   const SizedBox(height: 20),
                   _buildAnimatedMenuItem(
                     context,
-                    Icons.settings,
+                    Iconsax.setting_4,
                     'Settings',
                     isDarkMode ? AppColors.darkCardColor : AppColors.cardColor,
                     isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
@@ -301,7 +302,7 @@ class _MainDrawerState extends State<MainDrawer> with SingleTickerProviderStateM
               padding: const EdgeInsets.only(bottom: 7.0),
               child: _buildMenuItem(
                 context,
-                Icons.logout,
+                Iconsax.logout_1,
                 'Logout',
                 isDarkMode ? AppColors.darkCardColor : AppColors.cardColor,
                 isDarkMode ? AppColors.darkTextColor : AppColors.textColor,

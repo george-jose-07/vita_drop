@@ -101,6 +101,127 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
     });
   }
 
+  // Add this function to the _WaterHistoryScreenState class
+  Future<void> _deleteWaterEntry(
+      Map<String, dynamic> entry, String time, bool isDark) async {
+    final now = DateTime.now();
+    final today = DateFormat('yyyy-MM-dd').format(now);
+
+    // Show confirmation dialog
+    bool confirmDelete = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: isDark
+                ? AppColors.darBackgroundColor1
+                : AppColors.backgroundColor1,
+            title: Text(
+              'Delete Water Entry',
+              style: TextStyle(
+                  color:
+                      isDark ? AppColors.darkTextColor : AppColors.textColor),
+            ),
+            content: Text(
+              'Are you sure you want to delete ${entry['amount'].toStringAsFixed(2)}L water entry?',
+              style: TextStyle(
+                  color:
+                      isDark ? AppColors.darkTextColor : AppColors.textColor),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('Cancel',
+                  style: TextStyle(
+                      color:
+                      isDark ? AppColors.darkTextColor : AppColors.textColor),),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child:
+                    const Text('Delete', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirmDelete) return;
+
+    try {
+      // Query to find the document with matching time
+      final entriesSnapshot = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('water')
+          .doc(today)
+          .collection('entries')
+          .get();
+
+      // Find the specific entry that matches our time
+      QueryDocumentSnapshot<Map<String, dynamic>>? entryToDelete;
+
+      for (var doc in entriesSnapshot.docs) {
+        final timestamp = doc.data()['timestamp'].toDate();
+        final docTime = DateFormat('HH:mm').format(timestamp);
+        if (docTime == time) {
+          entryToDelete = doc;
+          break;
+        }
+      }
+
+      if (entryToDelete != null) {
+        // Get the amount in ml to subtract from total
+        final amountInMl = entryToDelete.data()['amount'] ?? 0;
+
+        // Delete the entry
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('water')
+            .doc(today)
+            .collection('entries')
+            .doc(entryToDelete.id)
+            .delete();
+
+        // Get the current total
+        final docSnapshot = await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('water')
+            .doc(today)
+            .get();
+
+        final currentTotal = docSnapshot.data()?['total'] ?? 0;
+
+        // Update the total water intake for today
+        final newTotal = currentTotal - amountInMl;
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('water')
+            .doc(today)
+            .update({'total': newTotal});
+
+        // Refresh the data
+        _fetchWaterHistory();
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Water entry deleted successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Could not find the water entry to delete')),
+        );
+      }
+    } catch (e) {
+      print('Error deleting water entry: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error deleting water entry')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode =
@@ -132,15 +253,15 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
             end: Alignment.bottomRight,
             colors: isDarkMode
                 ? [
-              AppColors.darBackgroundColor1,
-              AppColors.darBackgroundColor2,
-              AppColors.darBackgroundColor3
-            ]
+                    AppColors.darBackgroundColor1,
+                    AppColors.darBackgroundColor2,
+                    AppColors.darBackgroundColor3
+                  ]
                 : [
-              AppColors.backgroundColor1,
-              AppColors.backgroundColor2,
-              AppColors.backgroundColor3
-            ],
+                    AppColors.backgroundColor1,
+                    AppColors.backgroundColor2,
+                    AppColors.backgroundColor3
+                  ],
           ),
         ),
         child: SafeArea(
@@ -204,7 +325,8 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
                               getTitlesWidget: (value, meta) {
                                 if (value.toInt() >= waterHistory.length)
                                   return const Text('');
-                                final date = waterHistory[value.toInt()]['date'];
+                                final date =
+                                    waterHistory[value.toInt()]['date'];
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: RotatedBox(
@@ -302,7 +424,7 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Icon(
-                                Icons.water_drop,
+                                Icons.water_drop_outlined,
                                 color: Color(0xFF5cb5e1),
                               ),
                             ),
@@ -337,30 +459,34 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
                         const SizedBox(height: 16),
                         ...todayEntries.map<Widget>((entry) {
                           return Padding(
-                            padding: const EdgeInsets.only(left: 40, bottom: 8),
-                            child: Row(
-                              children: [
-                                Text(
-                                  entry['time'],
-                                  style: TextStyle(
-                                    color: isDarkMode
-                                        ? AppColors.darkTextColor
-                                        : AppColors.textColor,
-                                    fontSize: 14,
+                            padding: const EdgeInsets.only(left: 20, bottom: 8),
+                            child: GestureDetector(
+                              onLongPress: () => _deleteWaterEntry(
+                                  entry, entry['time'], isDarkMode),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    entry['time'],
+                                    style: TextStyle(
+                                      color: isDarkMode
+                                          ? AppColors.darkTextColor
+                                          : AppColors.textColor,
+                                      fontSize: 14,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 16),
-                                Text(
-                                  '${entry['amount'].toStringAsFixed(2)}L',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: isDarkMode
-                                        ? AppColors.darkTextColor
-                                        : AppColors.textColor,
+                                  const SizedBox(width: 16),
+                                  Text(
+                                    '${entry['amount'].toStringAsFixed(2)}L',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: isDarkMode
+                                          ? AppColors.darkTextColor
+                                          : AppColors.textColor,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         }).toList(),

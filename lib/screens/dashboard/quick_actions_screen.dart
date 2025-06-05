@@ -39,21 +39,21 @@ class QuickActionsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildQuickActionButton(
-                  icon: Icons.restaurant,
+                  icon: Icons.restaurant_outlined,
                   label: 'Add Meal',
                   onTap: onAddMeal,
                   width: MediaQuery.of(context).size.width * 0.25 - 10,
                   iconColor: Colors.orange
                 ),
                 _buildQuickActionButton(
-                  icon: Icons.water_drop,
+                  icon: Icons.water_drop_outlined,
                   label: 'Add Water',
                   onTap: onAddWater,
                   width: MediaQuery.of(context).size.width * 0.25 - 10,
                   iconColor: Color(0xFF5cb5e1)
                 ),
                 _buildQuickActionButton(
-                  icon: Icons.fitness_center,
+                  icon: Icons.fitness_center_outlined,
                   label: 'Add Workout',
                   onTap: onAddWorkout,
                   width: MediaQuery.of(context).size.width * 0.25 - 10,
@@ -77,7 +77,7 @@ class QuickActionsScreen extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        height: 120,
+        height: 100,
         width: width,
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(

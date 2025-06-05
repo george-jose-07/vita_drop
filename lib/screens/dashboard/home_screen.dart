@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:vita_drop/screens/add_entry_screen.dart';
 import 'package:vita_drop/screens/add_workout_screen.dart';
@@ -39,20 +40,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   // Refresh animation
   bool _isRefreshing = false;
-
-  // Theme colors
-  final Color backgroundColor1 = Color(0xFFF0F4F8);
-  final Color darkBackgroundColor1 = Color(0xFF1A1F25);
-  final Color backgroundColor2 = Color(0xFFD9E2EC);
-  final Color darkBackgroundColor2 = Color(0xFF2C3A4B);
-  final Color backgroundColor3 = Color(0xFFBCCCDC);
-  final Color darkBackgroundColor3 = Color(0xFF3E4C59);
-  final Color darkTextColor = Color(0xFFE4E7EB);
-  final Color textColor = Color(0xFF243B53);
-  final Color darkCardColor = Color(0xFF2A2F36);
-  final Color cardColor = Color(0xFFF7FAFC);
-  final Color darkAccentColor = Color(0xFF9AA5B1);
-  final Color accentColor = Color(0xFF627D98);
 
   // User data
   String username = '';
@@ -275,26 +262,26 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Future<void> _refreshData() async {
-    // Start refresh animation
-    // setState(() {
-    //   _isRefreshing = true;
-    // });
-    //
-    // // Reset and replay animations
-    // _animationController.reset();
+   // Start refresh animation
+    setState(() {
+      _isRefreshing = true;
+    });
+
+    // Reset and replay animations
+    _animationController.reset();
 
     await _fetchUserData();
     await _fetchDailyData();
     await _fetchSettings();
     await _buildDailyProgress();
 
-    // Forward animation after refresh
-    // _animationController.forward();
-    //
-    // // End refresh animation
-    // setState(() {
-    //   _isRefreshing = false;
-    // });
+   // Forward animation after refresh
+    _animationController.forward();
+
+    // End refresh animation
+    setState(() {
+      _isRefreshing = false;
+    });
   }
 
   @override
@@ -324,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 return Transform.rotate(
                   angle: _isRefreshing ? _animationController.value * 6.28 : 0,
                   child: IconButton(
-                      icon: Icon(Icons.refresh, size: 28),
+                      icon: Icon(Iconsax.refresh_circle, size: 28),
                       onPressed: _isRefreshing ? null : _refreshData
                   ),
                 );
@@ -332,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           IconButton(
             icon: Icon(
-              Icons.settings,
+              Iconsax.setting_4,
               size: 28,
             ),
             onPressed: () {
@@ -352,6 +339,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           const SizedBox(width: 10),
         ],
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Iconsax.menu),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
       ),
       drawer: Drawer(
         child: MainDrawer(
@@ -435,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               end: Offset.zero,
                             ).animate(_quickActionsAnimation),
                             child: QuickActionsScreen(
-                              textColor: isDarkMode ? darkTextColor : textColor,
+                              textColor: isDarkMode ? AppColors.darkTextColor : AppColors.textColor,
                               accentColor: isDarkMode ? AppColors.darkAccentColor : AppColors.accentColor,
                               cardColor: isDarkMode ? AppColors.darkCardColor : AppColors.cardColor,
                               onAddMeal: () {

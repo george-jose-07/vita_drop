@@ -41,7 +41,6 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
           .collection('meals')
           .get();
 
-
       // Filter documents for the last 15 days
       final filteredDocs = querySnapshot.docs.where((doc) {
         final docDate = doc.id;
@@ -61,17 +60,15 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
         };
       }).toList();
 
-
       // Get today's meals
       final todayDoc = filteredDocs.where((doc) => doc.id == today).firstOrNull;
-    
+
       List<Map<String, dynamic>> tempTodayMeals = [];
       int tempTodayTotal = 0;
 
       if (todayDoc != null) {
         // Set today's total calories
         tempTodayTotal = todayDoc['totalKcal'] ?? 0;
-      
 
         // Get individual meals for today
         final entriesSnapshot = await _firestore
@@ -83,10 +80,9 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
             .orderBy('timestamp', descending: true)
             .get();
 
-      
         tempTodayMeals = entriesSnapshot.docs.map((doc) {
           final data = doc.data();
-         
+
           return {
             'name': data['name'],
             'calories': data['kcal'],
@@ -104,19 +100,125 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
                   .reduce((a, b) => a > b ? a : b) +
               500.0;
 
-
       // Sort meal history by date in ascending order for the graph
       tempMealHistory.sort((a, b) => a['date'].compareTo(b['date']));
-    
+
       setState(() {
         mealHistory = tempMealHistory;
         todayMeals = tempTodayMeals;
         todayTotal = tempTodayTotal;
         maxCalories = tempMaxCalories;
-        
       });
     } catch (e) {
       print('Error fetching meal history: $e');
+    }
+  }
+
+  // Add this function to the _MealHistoryScreenState class
+  Future<void> _deleteMealEntry(
+      Map<String, dynamic> meal, String time, bool isDark) async {
+    final now = DateTime.now();
+    final today = DateFormat('yyyy-MM-dd').format(now);
+
+    // Show confirmation dialog
+    bool confirmDelete = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: isDark
+                ? AppColors.darBackgroundColor1
+                : AppColors.backgroundColor1,
+            title: Text(
+              'Delete Meal',
+              style: TextStyle(
+                  color:
+                      isDark ? AppColors.darkTextColor : AppColors.textColor),
+            ),
+            content: Text(
+              'Are you sure you want to delete "${meal['name']}"?',
+              style: TextStyle(
+                  color:
+                      isDark ? AppColors.darkTextColor : AppColors.textColor),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('Cancel',
+                  style: TextStyle(
+                      color:
+                      isDark ? AppColors.darkTextColor : AppColors.textColor),),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child:
+                    const Text('Delete', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirmDelete) return;
+
+    try {
+      // Query to find the document with matching time and name
+      final entriesSnapshot = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('meals')
+          .doc(today)
+          .collection('entries')
+          .where('name', isEqualTo: meal['name'])
+          .get();
+
+      // Find the specific entry that matches our time
+      QueryDocumentSnapshot<Map<String, dynamic>>? entryToDelete;
+
+      for (var doc in entriesSnapshot.docs) {
+        final timestamp = doc.data()['timestamp'].toDate();
+        final docTime = DateFormat('HH:mm').format(timestamp);
+        if (docTime == time) {
+          entryToDelete = doc;
+          break;
+        }
+      }
+
+      if (entryToDelete != null) {
+        // Delete the entry
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('meals')
+            .doc(today)
+            .collection('entries')
+            .doc(entryToDelete.id)
+            .delete();
+
+        // Update the total calories for today
+        final newTotal = todayTotal - meal['calories'];
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('meals')
+            .doc(today)
+            .update({'totalKcal': newTotal});
+
+        // Refresh the data
+        _fetchMealHistory();
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Meal deleted successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not find the meal to delete')),
+        );
+      }
+    } catch (e) {
+      print('Error deleting meal: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error deleting meal')),
+      );
     }
   }
 
@@ -151,15 +253,15 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
             end: Alignment.bottomRight,
             colors: isDarkMode
                 ? [
-              AppColors.darBackgroundColor1,
-              AppColors.darBackgroundColor2,
-              AppColors.darBackgroundColor3
-            ]
+                    AppColors.darBackgroundColor1,
+                    AppColors.darBackgroundColor2,
+                    AppColors.darBackgroundColor3
+                  ]
                 : [
-              AppColors.backgroundColor1,
-              AppColors.backgroundColor2,
-              AppColors.backgroundColor3
-            ],
+                    AppColors.backgroundColor1,
+                    AppColors.backgroundColor2,
+                    AppColors.backgroundColor3
+                  ],
           ),
         ),
         child: SafeArea(
@@ -224,7 +326,7 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
                                 if (value.toInt() >= mealHistory.length)
                                   return const Text('');
                                 final date = mealHistory[value.toInt()]['date'];
-                            
+
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: RotatedBox(
@@ -249,7 +351,6 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
                               showTitles: true,
                               reservedSize: 30,
                               getTitlesWidget: (value, meta) {
-                                
                                 return Text(
                                   '${value.toInt()}',
                                   style: TextStyle(
@@ -326,7 +427,7 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Icon(
-                                Icons.local_fire_department,
+                                Icons.local_fire_department_outlined,
                                 color: Colors.orange,
                               ),
                             ),
@@ -361,30 +462,66 @@ class _MealHistoryScreenState extends State<MealHistoryScreen> {
                         const SizedBox(height: 16),
                         ...todayMeals.map<Widget>((meal) {
                           return Padding(
-                            padding: const EdgeInsets.only(left: 40, bottom: 8),
-                            child: Row(
-                              children: [
-                                Text(
-                                  meal['time'],
-                                  style: TextStyle(
-                                    color: isDarkMode
-                                        ? AppColors.darkTextColor
-                                        : AppColors.textColor,
-                                    fontSize: 14,
+                            padding: const EdgeInsets.only(left: 20, bottom: 8),
+                            child: GestureDetector(
+                              onLongPress: () => _deleteMealEntry(
+                                  meal, meal['time'], isDarkMode),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        meal['time'],
+                                        style: TextStyle(
+                                          color: isDarkMode
+                                              ? AppColors.darkTextColor
+                                              : AppColors.textColor,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Text(
+                                          '${meal['name']} ',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: isDarkMode
+                                                ? AppColors.darkTextColor
+                                                : AppColors.textColor,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: true,
+                                        ),
+                                      ),
+                                      // Text(
+                                      //   '• ${meal['calories']} kcal',
+                                      //   style: TextStyle(
+                                      //     fontSize: 14,
+                                      //     fontWeight: FontWeight.w500,
+                                      //     color: isDarkMode
+                                      //         ? AppColors.darkTextColor
+                                      //         : AppColors.textColor,
+                                      //   ),
+                                      // ),
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(width: 16),
-                                Text(
-                                  '${meal['name']} • ${meal['calories']} kcal',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: isDarkMode
-                                        ? AppColors.darkTextColor
-                                        : AppColors.textColor,
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 60),
+                                    child: Text(
+                                      '${meal['type']}  •  ${meal['calories']} kcal',
+                                      style: TextStyle(
+                                        color: isDarkMode
+                                            ? AppColors.darkTextColor
+                                            : AppColors.textColor,
+                                        fontSize: 12,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         }).toList(),

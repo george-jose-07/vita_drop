@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import '../water_history_screen.dart';
 
 class HealthMetricsScreen extends StatelessWidget {
@@ -31,7 +32,7 @@ class HealthMetricsScreen extends StatelessWidget {
               value: double.tryParse(bmi)?.toStringAsFixed(2) ?? '0.00',
               subtitle: bmiType,
               color: _getBMIColor(double.tryParse(bmi) ?? 0.0),
-              icon: Icons.monitor_weight,
+              icon: Iconsax.calculator,
             ),
           ),
           const SizedBox(width: 10),
@@ -50,7 +51,7 @@ class HealthMetricsScreen extends StatelessWidget {
                 value: '${waterIntake.toStringAsFixed(2)}L',
                 subtitle: 'Daily Intake',
                 color: Color(0xFF5cb5e1),
-                icon: Icons.water_drop,
+                icon: Icons.water_drop_outlined,
               ),
             ),
           ),
