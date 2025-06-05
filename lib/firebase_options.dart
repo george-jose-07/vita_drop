@@ -41,7 +41,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBeJxvmwIihWYKFoB0D5EMLk83Mx8wBTOc',
+    apiKey: 'your api key',
     appId: '1:601492668856:web:49165343e3798fa811cf4d',
     messagingSenderId: '601492668856',
     projectId: 'vita-drop-17',
@@ -50,7 +50,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAXJH3M0f1l3UgLwAjmJn-Ju6uS7ZPciDQ',
+    apiKey: 'your api key',
     appId: '1:601492668856:android:59dbfc18b6fcc17e11cf4d',
     messagingSenderId: '601492668856',
     projectId: 'vita-drop-17',
@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBLBKSHgd5wTOl-3sBESNvH-966GFAa49M',
+    apiKey: 'your api key',
     appId: '1:601492668856:ios:5e8c6c9e78aea51911cf4d',
     messagingSenderId: '601492668856',
     projectId: 'vita-drop-17',
@@ -68,7 +68,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBLBKSHgd5wTOl-3sBESNvH-966GFAa49M',
+    apiKey: 'your api key',
     appId: '1:601492668856:ios:5e8c6c9e78aea51911cf4d',
     messagingSenderId: '601492668856',
     projectId: 'vita-drop-17',
@@ -78,7 +78,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBeJxvmwIihWYKFoB0D5EMLk83Mx8wBTOc',
+    apiKey: 'your api key',
     appId: '1:601492668856:web:15873100962aeb6411cf4d',
     messagingSenderId: '601492668856',
     projectId: 'vita-drop-17',
